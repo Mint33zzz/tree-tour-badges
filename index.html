@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Tree Tour — Badge Hunt</title>
+  <meta name="theme-color" content="#5cc48d"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+:root{
+  --ink:#18302a; --muted:#5f7d72; --bg:#f4fbf6; --card:#ffffff;
+  --accent:#43b27b; --accent2:#ffdf5a;
+}
+*{box-sizing:border-box} html,body{height:100%;margin:0}
+body{font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background: var(--bg); color: var(--ink);}
+.appbar{position: sticky; top:0; display:flex; justify-content:space-between; align-items:center;
+  padding:.75rem 1rem; background:linear-gradient(90deg, var(--accent), #64c9a0); color:#fff;
+  box-shadow:0 2px 10px rgba(0,0,0,.08); border-bottom-left-radius:12px; border-bottom-right-radius:12px;}
+.appbar .title{font-weight:700}
+.appbar-actions{display:flex; gap:.5rem;}
+.appbar .link{background: rgba(255,255,255,.2); color:white; border:none; padding:.4rem .6rem; border-radius:8px; cursor:pointer;}
+.appbar .link:hover{background: rgba(255,255,255,.3);}
+main{padding:.8rem; max-width:760px; margin:0 auto;}
+.card{background:var(--card); border:2px solid #e4f2e9; border-radius:16px; padding:1rem; margin-bottom:.8rem;
+  box-shadow:0 6px 16px rgba(0,0,0,.05);}
+h1{font-size:1.25rem;margin:.2rem 0 .6rem} h2{font-size:1.05rem;margin:.2rem 0 .6rem}
+p{margin:.4rem 0;color:var(--ink)}
+.progress .bar{width:100%; height:12px; border-radius:999px; background:#eaeff0; overflow:hidden;}
+.progress .fill{height:100%; width:0%; background:linear-gradient(90deg, var(--accent2), var(--accent)); transition:width .4s ease}
+.progress-text{margin-top:.5rem;color:var(--muted)}
+.current .hero{display:flex; gap:.8rem; align-items:center;}
+.current .hero .emblem{width:72px; height:72px; border-radius:16px; background:#fff7d6; display:grid; place-items:center;
+  font-size:2rem; border:2px dashed #f3d576;}
+.meta{color:var(--muted); font-size:.9rem}
+.actions{display:flex; gap:.6rem; margin-top:.6rem; flex-wrap:wrap;}
+.btn{border:none; border-radius:999px; padding:.6rem 1rem; font-weight:700; background:var(--accent); color:white;
+  box-shadow:0 3px 0 #2e8e62; cursor:pointer;}
+.btn.secondary{background:#eef7f1; color:#1f5e43; box-shadow:none; border:1px solid #d6ecdf;}
+.hint{background:#fff4d6; padding:.6rem .8rem; border-radius:12px; border:1px dashed #ffd15a; margin-top:.6rem;}
+.badges{display:grid; grid-template-columns: repeat(4, 1fr); gap:.6rem;}
+.badge{aspect-ratio:1/1; border-radius:16px; border:2px dashed #dfeee6; display:grid; place-items:center;
+  background:#f7fbf9; color:#c5d7ce; font-size:1.6rem;}
+.badge.unlocked{border-style: solid; background:#fffdf0; color:#5f4a00; position:relative;}
+.badge.unlocked::after{content:'★'; position:absolute; top:6px; right:8px; font-size:.8rem; color:#ffb400;}
+.badge.current{border-color: var(--accent); border-width: 3px; transform: scale(1.05);}
+.badge:hover{transform: scale(1.02); transition: transform 0.2s ease;}
+.badge .label{font-size:.7rem; color:#5c726a; text-align:center; padding:0 .2rem; margin-top:.2rem;}
+.toggle{display:flex; align-items:center; gap:.5rem; margin-top:.4rem} .toggle input{transform:scale(1.2)}
+footer{padding:1rem; text-align:center; color:var(--muted)}
+#map{height:300px; width:100%; border-radius:16px; margin-top:.6rem; z-index:1;}
+@media (min-width:600px){ .badges{grid-template-columns: repeat(6, 1fr);} }
+  </style>
+</head>
+<body>
+<header class="appbar">
+  <div class="title">🌿 Tree Tour — Badge Hunt</div>
+  <div class="appbar-actions">
+    <button id="clearBtn" class="link">Clear Current</button>
+    <button id="resetBtn" class="link">Reset All</button>
+  </div>
+</header>
+
+<main>
+  <section class="intro card">
+    <h1>Collect badges as you visit trees!</h1>
+    <p>Walk to each stop, tap <b>Check in</b> to earn a badge, and get the hint for the next stop. Works offline and saves your progress on this device.</p>
+    <div class="toggles">
+      <label class="toggle">
+        <input id="demoMode" type="checkbox">
+        <span>Demo mode (no GPS)</span>
+      </label>
+      <small>Tip: For class demo or inside buildings, enable demo mode; you'll be able to check-in without location.</small>
+    </div>
+  </section>
+
+  <section class="progress card" aria-label="Progress">
+    <div id="progressBar" class="bar"><div id="progressFill" class="fill"></div></div>
+    <div id="progressText" class="progress-text">0 / 10 badges</div>
+  </section>
+
+  <section class="card">
+    <h2>📍 Tour Map</h2>
+    <div id="map"></div>
+  </section>
+
+  <section id="current" class="current card" aria-live="polite"></section>
+
+  <section class="grid card">
+    <h2>Your Badges</h2>
+    <div id="badgeGrid" class="badges"></div>
+  </section>
+</main>
+
+<footer><small>Edit the STOP_DATA below to customize.</small></footer>
+
+<script>
+const RADIUS_M = 20;
+
+const STOP_DATA = [
+  {"id":"osage-row","name":"Osage Orange Trees row","short":"Osage row","type":"tree","emoji":"🟠","lat":43.115721,"lng":-79.2471084,"desc":"A historic hedge tree; look for bumpy orange fruits in fall.","hint":"Walk toward the community garden near Theal House."},
+  {"id":"community-garden","name":"Brock Community Garden","short":"Garden","type":"poi","emoji":"🪴","lat":43.1160537,"lng":-79.2471875,"desc":"Student-run plots with pollinators and veggies.","hint":"From here, head north to the evergreen by the lawn."},
+  {"id":"white-cedar","name":"White Cedar","short":"Cedar","type":"tree","emoji":"🌲","lat":43.1162215,"lng":-79.2478187,"desc":"Evergreen windbreak; scale-like leaves.","hint":"Find the classic Canadian maple nearby."},
+  {"id":"sugar-maple","name":"Sugar Maple","short":"Maple","type":"tree","emoji":"🍁","lat":43.1165016,"lng":-79.2477937,"desc":"Brilliant fall color; maple syrup icon!","hint":"Seek a hard, dark seed—Kentucky Coffee Tree."},
+  {"id":"kentucky-coffee","name":"Kentucky Coffee Tree","short":"Coffee","type":"tree","emoji":"☕️","lat":43.1169499,"lng":-79.2472722,"desc":"Large pods; bold branching in winter.","hint":"A white pine by a small labyrinth is next."},
+  {"id":"white-pine-labyrinth","name":"White Pine and Labrynth","short":"Pine & Labyrinth","type":"poi","emoji":"🌀","lat":43.1180244,"lng":-79.2473441,"desc":"Tall needles; quiet walking spiral.","hint":"Two thousand rings? Look for the time edge."},
+  {"id":"2000-edge","name":"2000 years on edge","short":"2000 years","type":"poi","emoji":"⏳","lat":43.1183813,"lng":-79.2470053,"desc":"A timeline edge marking ages of trees.","hint":"Find the living fossil with fan leaves."},
+  {"id":"ginkgo","name":"Ginkgo Biloba","short":"Ginkgo","type":"tree","emoji":"🪙","lat":43.1184671,"lng":-79.2469966,"desc":"Fan-shaped leaves; golden in fall.","hint":"Head to the Indigenous Healing Garden."},
+  {"id":"healing-garden","name":"Indigenous Healing Garder","short":"Healing G.","type":"garden","emoji":"🌼","lat":43.1188979,"lng":-79.2469537,"desc":"Native plants used in traditional healing.","hint":"Next: bee friends at the pollinator garden."},
+  {"id":"pollinator","name":"Bee Pollinator Garden","short":"Pollinator","type":"garden","emoji":"🐝","lat":43.1189591,"lng":-79.2455773,"desc":"Habitat patches to support pollinators.","hint":"Take a breather at the rest point."},
+  {"id":"rest","name":"Rest Point","short":"Rest","type":"poi","emoji":"🪑","lat":43.1186606,"lng":-79.2477885,"desc":"Food, washrooms, seating.","hint":"Find the rows of spring blossoms."},
+  {"id":"cherry-rows","name":"Cherry Trees Rows","short":"Cherry rows","type":"tree","emoji":"🌸","lat":43.1183614,"lng":-79.2489788,"desc":"Rows of cherries; blossom in spring.","hint":"Locate the red-tinted oak: Pin Oak."},
+  {"id":"pin-oak","name":"Pin Oak","short":"Pin Oak","type":"tree","emoji":"🔴","lat":43.1181438,"lng":-79.2493887,"desc":"Tiered branches; deep sinuses; red fall color.","hint":"Cherry blossoms and a Japanese corner ahead."},
+  {"id":"cherry-japanese","name":"Cherry Blossoms and Japanese ...","short":"Japanese corner","type":"poi","emoji":"🧘","lat":43.1176426,"lng":-79.249335,"desc":"A quiet corner with ornamental cherries.","hint":"Look for weeping willows near water."},
+  {"id":"willows","name":"Weeping Willows","short":"Willows","type":"tree","emoji":"💧","lat":43.1171028,"lng":-79.2496871,"desc":"Graceful drooping branches near wet areas.","hint":"A tough weed with a purple flower next."},
+  {"id":"milk-thistle","name":"Milk Thistle","short":"Thistle","type":"plant","emoji":"🟣","lat":43.116452,"lng":-79.249994,"desc":"Spiny leaves with white marbling.","hint":"Find white maples and hawthorn nearby."},
+  {"id":"white-maples-hawthorne","name":"White Maples?? AND Hawthorne","short":"Maple & Haw.","type":"tree","emoji":"🌿","lat":43.1160017,"lng":-79.2496668,"desc":"Mixed trees forming a small edge.","hint":"Back to more Osage orange along the edge."},
+  {"id":"more-osage","name":"More Osage Orange","short":"More Osage","type":"tree","emoji":"🟠","lat":43.1157808,"lng":-79.2485242,"desc":"Another stretch of Osage hedge.","hint":"Finish at Theal House."},
+  {"id":"theal-house","name":"Theal House","short":"Theal","type":"building","emoji":"🏠","lat":43.1157778,"lng":-79.2477361,"desc":"Historic house and meeting point.","hint":"Tour complete — great job!"}
+];
+
+let stops = STOP_DATA.map((s,i)=>({...s, idx:i}));
+let progress = JSON.parse(localStorage.getItem('tt_progress') || '{}');
+let demoMode = false;
+let currentStopId = null;
+
+const els = {
+  current: document.getElementById('current'),
+  badgeGrid: document.getElementById('badgeGrid'),
+  fill: document.getElementById('progressFill'),
+  ptext: document.getElementById('progressText'),
+  reset: document.getElementById('resetBtn'),
+  clear: document.getElementById('clearBtn'),
+  demo: document.getElementById('demoMode'),
+  map: document.getElementById('map'),
+};
+
+els.reset.addEventListener('click', ()=>{
+  if(confirm('Clear your progress on this device?')){
+    localStorage.removeItem('tt_progress'); progress = {}; currentStopId = null; renderAll();
+  }
+});
+
+els.clear.addEventListener('click', ()=>{
+  if(currentStopId && progress[currentStopId]){
+    const stopName = stops.find(s => s.id === currentStopId)?.name;
+    if(confirm(`Clear badge for "${stopName}" and return to initial state?`)){
+      delete progress[currentStopId];
+      localStorage.setItem('tt_progress', JSON.stringify(progress));
+      currentStopId = null;
+      renderAll();
+    }
+  } else {
+    alert('No unlocked badge to clear for current stop.');
+  }
+});
+
+els.demo.addEventListener('change', (e)=>{ demoMode = e.target.checked; });
+
+let mapInstance = null;
+
+function initMap() {
+  if (stops.length === 0) return;
+  
+  const bounds = stops.reduce((acc, stop) => {
+    if (!acc.minLat || stop.lat < acc.minLat) acc.minLat = stop.lat;
+    if (!acc.maxLat || stop.lat > acc.maxLat) acc.maxLat = stop.lat;
+    if (!acc.minLng || stop.lng < acc.minLng) acc.minLng = stop.lng;
+    if (!acc.maxLng || stop.lng > acc.maxLng) acc.maxLng = stop.lng;
+    return acc;
+  }, { minLat: null, maxLat: null, minLng: null, maxLng: null });
+  
+  const centerLat = (bounds.minLat + bounds.maxLat) / 2;
+  const centerLng = (bounds.minLng + bounds.maxLng) / 2;
+  
+  mapInstance = L.map('map').setView([centerLat, centerLng], 16);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(mapInstance);
+  
+  renderMapMarkers();
+}
+
+function renderMapMarkers() {
+  if (!mapInstance) return;
+  
+  mapInstance.eachLayer(layer => {
+    if (layer instanceof L.Marker) {
+      mapInstance.removeLayer(layer);
+    }
+  });
+  
+  stops.forEach(stop => {
+    const isUnlocked = !!progress[stop.id];
+    const isCurrent = currentStopId === stop.id;
+    
+    const color = isUnlocked ? '#43b27b' : '#9ca3af';
+    const borderColor = isCurrent ? '#ffdf5a' : '#fff';
+    
+    const marker = L.circleMarker([stop.lat, stop.lng], {
+      radius: 10,
+      fillColor: color,
+      color: borderColor,
+      weight: isCurrent ? 4 : 2,
+      opacity: 1,
+      fillOpacity: 0.8
+    }).addTo(mapInstance);
+    
+    marker.bindPopup(`
+      <div style="text-align:center;">
+        <div style="font-size:1.5em;margin-bottom:4px;">${stop.emoji}</div>
+        <b>${stop.name}</b><br>
+        <small>#${stop.idx + 1} ${stop.type}</small>
+        ${isUnlocked ? '<br><span style="color:#43b27b;">✓ Unlocked</span>' : ''}
+      </div>
+    `);
+    
+    marker.on('click', () => {
+      currentStopId = stop.id;
+      renderCurrent();
+      document.getElementById('current').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+}
+
+function renderAll(){ renderProgress(); renderCurrent(); renderBadges(); renderMapMarkers(); }
+function renderProgress(){
+  const unlocked = Object.keys(progress).filter(k => progress[k]).length;
+  const total = stops.length; const pct = total ? Math.round(unlocked/total*100) : 0;
+  els.fill.style.width = pct + '%'; els.ptext.textContent = `${unlocked} / ${total} badges`;
+}
+function renderCurrent(){
+  let targetStop;
+  
+  if (currentStopId) {
+    targetStop = stops.find(s => s.id === currentStopId);
+    if (!targetStop) {
+      targetStop = stops.find(s => !progress[s.id]) || stops[stops.length-1];
+      currentStopId = targetStop.id;
+    }
+  } else {
+    targetStop = stops.find(s => !progress[s.id]) || stops[stops.length-1];
+    currentStopId = targetStop.id;
+  }
+  
+  const isUnlocked = !!progress[targetStop.id];
+  const idx = targetStop.idx + 1;
+  
+  els.current.innerHTML = `
+    <div class="hero">
+      <div class="emblem">${targetStop.emoji || "🌳"}</div>
+      <div>
+        <h2>#${idx} ${targetStop.name} ${isUnlocked ? '✓' : ''}</h2>
+        <div class="meta">${targetStop.type}</div>
+        <p>${targetStop.desc}</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="checkBtn">${isUnlocked ? 'Re-check in' : 'Check in'}</button>
+      <button class="btn secondary" id="skipBtn">Skip</button>
+    </div>
+    <div class="hint"><b>Next hint:</b> ${targetStop.hint}</div>`;
+    
+  document.getElementById('checkBtn').addEventListener('click', ()=>doCheckIn(targetStop));
+  document.getElementById('skipBtn').addEventListener('click', ()=>{
+    if(confirm('Skip location check for this stop?')){
+      progress[targetStop.id] = true; localStorage.setItem('tt_progress', JSON.stringify(progress)); renderAll();
+    }
+  });
+}
+function renderBadges(){
+  els.badgeGrid.innerHTML = '';
+  stops.forEach(s => {
+    const unlocked = !!progress[s.id];
+    const isCurrent = currentStopId === s.id;
+    const d = document.createElement('div');
+    d.className = 'badge ' + (unlocked ? 'unlocked' : '') + (isCurrent ? ' current' : '');
+    d.style.cursor = 'pointer';
+    d.innerHTML = `<div>${s.emoji || '🌳'}</div>`;
+    const label = document.createElement('div'); 
+    label.className = 'label'; 
+    label.textContent = s.short || s.name;
+    d.appendChild(label); 
+    
+    d.addEventListener('click', () => {
+      currentStopId = s.id;
+      renderCurrent();
+    });
+    
+    els.badgeGrid.appendChild(d);
+  });
+}
+function doCheckIn(stop){
+  if(demoMode){ progress[stop.id] = true; localStorage.setItem('tt_progress', JSON.stringify(progress)); renderAll(); return; }
+  if(!('geolocation' in navigator)){ alert('Geolocation not supported. Enable demo mode to proceed.'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    const d = distanceInMeters(pos.coords.latitude, pos.coords.longitude, stop.lat, stop.lng);
+    if(d <= RADIUS_M){
+      progress[stop.id] = true; localStorage.setItem('tt_progress', JSON.stringify(progress));
+      alert(`Badge unlocked: ${stop.name}! 🎉`); renderAll();
+    }else{
+      alert(`You are ${Math.round(d)}m away. Move closer (≤ ${RADIUS_M}m) or enable demo mode.`);
+    }
+  }, err => { alert('Location error: ' + err.message + '\nTip: allow location permission, or use demo mode.'); },
+  { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
+}
+function distanceInMeters(lat1, lon1, lat2, lon2){
+  const toRad = x => x * Math.PI / 180, R = 6371000;
+  const dLat = toRad(lat2-lat1), dLon = toRad(lon2-lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c;
+}
+initMap();
+renderAll();
+</script>
+</body>
+</html>
