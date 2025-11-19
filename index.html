@@ -93,28 +93,27 @@ footer{padding:1rem; text-align:center; color:var(--muted)}
   </section>
 </main>
 
+<footer><small>Edit the STOP_DATA below to customize.</small></footer>
+
 <script>
 const RADIUS_M = 20;
 
 const STOP_DATA = [
-  {"id":"osage-row","name":"Osage Orange Trees row","short":"Osage row","type":"tree","emoji":"🟠","lat":43.115721,"lng":-79.2471084,"desc":"A historic hedge tree; look for bumpy orange fruits in fall.","hint":"Walk toward the community garden near Theal House."},
-  {"id":"community-garden","name":"Brock Community Garden","short":"Garden","type":"poi","emoji":"🪴","lat":43.1160537,"lng":-79.2471875,"desc":"Student-run plots with pollinators and veggies.","hint":"From here, head north to the evergreen by the lawn."},
+  {"id":"osage-row","name":"Osage Orange Trees row","short":"Osage row","type":"tree","emoji":"🌳","lat":43.115721,"lng":-79.2471084,"desc":"A historic hedge tree; look for bumpy orange fruits in fall.","hint":"Walk toward the community garden near Theal House."},
+  {"id":"community-garden","name":"Brock Community Garden","short":"Community","type":"poi","emoji":"🌱","lat":43.1160537,"lng":-79.2471875,"desc":"Student-run plots with pollinators and veggies.","hint":"From here, head north to the evergreen by the lawn."},
   {"id":"white-cedar","name":"White Cedar","short":"Cedar","type":"tree","emoji":"🌲","lat":43.1162215,"lng":-79.2478187,"desc":"Evergreen windbreak; scale-like leaves.","hint":"Find the classic Canadian maple nearby."},
-  {"id":"sugar-maple","name":"Sugar Maple","short":"Maple","type":"tree","emoji":"🍁","lat":43.1165016,"lng":-79.2477937,"desc":"Brilliant fall color; maple syrup icon!","hint":"Seek a hard, dark seed—Kentucky Coffee Tree."},
+  {"id":"sugar-maple","name":"Sugar Maple","short":"Maple","type":"tree","emoji":"🍁","lat":43.1165016,"lng":-79.2477937,"desc":"Brilliant fall color; maple syrup icon!","hint":"Look for a tree with bold branching—Kentucky Coffee Tree."},
   {"id":"kentucky-coffee","name":"Kentucky Coffee Tree","short":"Coffee","type":"tree","emoji":"☕️","lat":43.1169499,"lng":-79.2472722,"desc":"Large pods; bold branching in winter.","hint":"A white pine by a small labyrinth is next."},
   {"id":"white-pine-labyrinth","name":"White Pine and Labrynth","short":"Pine & Labyrinth","type":"poi","emoji":"🌀","lat":43.1180244,"lng":-79.2473441,"desc":"Tall needles; quiet walking spiral.","hint":"Two thousand rings? Look for the time edge."},
-  {"id":"2000-edge","name":"2000 years on edge","short":"2000 years","type":"poi","emoji":"⏳","lat":43.1183813,"lng":-79.2470053,"desc":"A timeline edge marking ages of trees.","hint":"Find the living fossil with fan leaves."},
-  {"id":"ginkgo","name":"Ginkgo Biloba","short":"Ginkgo","type":"tree","emoji":"🪙","lat":43.1184671,"lng":-79.2469966,"desc":"Fan-shaped leaves; golden in fall.","hint":"Head to the Indigenous Healing Garden."},
-  {"id":"healing-garden","name":"Indigenous Healing Garden","short":"Healing G.","type":"garden","emoji":"🌼","lat":43.1188979,"lng":-79.2469537,"desc":"Native plants used in traditional healing.","hint":"Next: bee friends at the pollinator garden."},
-  {"id":"pollinator","name":"Bee Pollinator Garden","short":"Pollinator","type":"garden","emoji":"🐝","lat":43.1189591,"lng":-79.2455773,"desc":"Habitat patches to support pollinators.","hint":"Take a breather at the rest point."},
-  {"id":"rest","name":"Rest Point","short":"Rest","type":"poi","emoji":"🪑","lat":43.1186606,"lng":-79.2477885,"desc":"Food, washrooms, seating.","hint":"Find the rows of spring blossoms."},
+  {"id":"2000-edge","name":"2000 years on edge","short":"2000 years","type":"poi","emoji":"📅","lat":43.1183813,"lng":-79.2470053,"desc":"A timeline edge marking ages of trees.","hint":"Find the living fossil with fan leaves."},
+  {"id":"ginkgo","name":"Ginkgo Biloba","short":"Ginkgo","type":"tree","emoji":"🍂","lat":43.1184671,"lng":-79.2469966,"desc":"Fan-shaped leaves; golden in fall.","hint":"Head to the Indigenous Healing Garden."},
+  {"id":"healing-garden","name":"Indigenous Healing Garder","short":"Healing G.","type":"garden","emoji":"🌼","lat":43.1188979,"lng":-79.2469537,"desc":"Native plants used in traditional healing.","hint":"Next: bee friends at the pollinator garden."},
+  {"id":"pollinator","name":"Bee Pollinator Garden","short":"Pollinator","type":"garden","emoji":"🐝","lat":43.1189591,"lng":-79.2455773,"desc":"Habitat patches to support pollinators.","hint":"Find the commemorative tree known as the 'Saviour of Canada'."},
+  {"id":"saviour-canada","name":"Saviour of Canada","short":"Saviour","type":"tree","emoji":"⭐","lat":43.1190058,"lng":-79.2489728,"desc":"A commemorative tree known as the 'Saviour of Canada'.","hint":"Walk toward the nearby cherry trees."},
   {"id":"cherry-rows","name":"Cherry Trees Rows","short":"Cherry rows","type":"tree","emoji":"🌸","lat":43.1183614,"lng":-79.2489788,"desc":"Rows of cherries; blossom in spring.","hint":"Locate the red-tinted oak: Pin Oak."},
-  {"id":"pin-oak","name":"Pin Oak","short":"Pin Oak","type":"tree","emoji":"🔴","lat":43.1181438,"lng":-79.2493887,"desc":"Tiered branches; deep sinuses; red fall color.","hint":"Cherry blossoms and a Japanese corner ahead."},
-  {"id":"cherry-japanese","name":"Cherry Blossoms and Japanese ...","short":"Japanese corner","type":"poi","emoji":"🧘","lat":43.1176426,"lng":-79.249335,"desc":"A quiet corner with ornamental cherries.","hint":"Look for weeping willows near water."},
-  {"id":"willows","name":"Weeping Willows","short":"Willows","type":"tree","emoji":"💧","lat":43.1171028,"lng":-79.2496871,"desc":"Graceful drooping branches near wet areas.","hint":"A tough weed with a purple flower next."},
-  {"id":"milk-thistle","name":"Milk Thistle","short":"Thistle","type":"plant","emoji":"🟣","lat":43.116452,"lng":-79.249994,"desc":"Spiny leaves with white marbling.","hint":"Find white maples and hawthorn nearby."},
-  {"id":"white-maples-hawthorne","name":"White Maples?? AND Hawthorne","short":"Maple & Haw.","type":"tree","emoji":"🌿","lat":43.1160017,"lng":-79.2496668,"desc":"Mixed trees forming a small edge.","hint":"Back to more Osage orange along the edge."},
-  {"id":"more-osage","name":"More Osage Orange","short":"More Osage","type":"tree","emoji":"🟠","lat":43.1157808,"lng":-79.2485242,"desc":"Another stretch of Osage hedge.","hint":"Finish at Theal House."},
+  {"id":"pin-oak","name":"Pin Oak","short":"Pin Oak","type":"tree","emoji":"🍃","lat":43.1181438,"lng":-79.2493887,"desc":"Tiered branches; deep sinuses; red fall color.","hint":"Look for weeping willows near water."},
+  {"id":"willows","name":"Weeping Willows","short":"Willows","type":"tree","emoji":"💧","lat":43.1171028,"lng":-79.2496871,"desc":"Graceful drooping branches near wet areas.","hint":"Find white maples and hawthorn nearby."},
+  {"id":"white-maples-hawthorne","name":"White Maples?? AND Hawthorne","short":"Maple & Haw.","type":"tree","emoji":"🌿","lat":43.1160017,"lng":-79.2496668,"desc":"Mixed trees forming a small edge.","hint":"Finish at Theal House."},
   {"id":"theal-house","name":"Theal House","short":"Theal","type":"building","emoji":"🏠","lat":43.1157778,"lng":-79.2477361,"desc":"Historic house and meeting point.","hint":"Tour complete — great job!"}
 ];
 
