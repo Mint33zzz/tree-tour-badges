@@ -4,7 +4,7 @@
     "name": "Osage Orange Trees row",
     "short": "Osage row",
     "type": "tree",
-    "emoji": "🟠",
+    "emoji": "🌳",
     "lat": 43.115721,
     "lng": -79.2471084,
     "desc": "A historic hedge tree; look for bumpy orange fruits in fall.",
@@ -13,9 +13,9 @@
   {
     "id": "community-garden",
     "name": "Brock Community Garden",
-    "short": "Garden",
+    "short": "Community",
     "type": "poi",
-    "emoji": "🪴",
+    "emoji": "🌱",
     "lat": 43.1160537,
     "lng": -79.2471875,
     "desc": "Student-run plots with pollinators and veggies.",
@@ -41,7 +41,7 @@
     "lat": 43.1165016,
     "lng": -79.2477937,
     "desc": "Brilliant fall color; maple syrup icon!",
-    "hint": "Seek a hard, dark seed—Kentucky Coffee Tree."
+    "hint": "Look for a tree with bold branching—Kentucky Coffee Tree."
   },
   {
     "id": "kentucky-coffee",
@@ -70,7 +70,7 @@
     "name": "2000 years on edge",
     "short": "2000 years",
     "type": "poi",
-    "emoji": "⏳",
+    "emoji": "📅",
     "lat": 43.1183813,
     "lng": -79.2470053,
     "desc": "A timeline edge marking ages of trees.",
@@ -81,7 +81,7 @@
     "name": "Ginkgo Biloba",
     "short": "Ginkgo",
     "type": "tree",
-    "emoji": "🪙",
+    "emoji": "🍂",
     "lat": 43.1184671,
     "lng": -79.2469966,
     "desc": "Fan-shaped leaves; golden in fall.",
@@ -89,7 +89,7 @@
   },
   {
     "id": "healing-garden",
-    "name": "Indigenous Healing Garden",
+    "name": "Indigenous Healing Garder",
     "short": "Healing G.",
     "type": "garden",
     "emoji": "🌼",
@@ -107,18 +107,18 @@
     "lat": 43.1189591,
     "lng": -79.2455773,
     "desc": "Habitat patches to support pollinators.",
-    "hint": "Take a breather at the rest point."
+    "hint": "Find the commemorative tree known as the 'Saviour of Canada'."
   },
   {
-    "id": "rest",
-    "name": "Rest Point",
-    "short": "Rest",
-    "type": "poi",
-    "emoji": "🪑",
-    "lat": 43.1186606,
-    "lng": -79.2477885,
-    "desc": "Food, washrooms, seating.",
-    "hint": "Find the rows of spring blossoms."
+    "id": "saviour-canada",
+    "name": "Saviour of Canada",
+    "short": "Saviour",
+    "type": "tree",
+    "emoji": "⭐",
+    "lat": 43.1190058,
+    "lng": -79.2489728,
+    "desc": "A commemorative tree known as the 'Saviour of Canada'.",
+    "hint": "Walk toward the nearby cherry trees."
   },
   {
     "id": "cherry-rows",
@@ -136,21 +136,10 @@
     "name": "Pin Oak",
     "short": "Pin Oak",
     "type": "tree",
-    "emoji": "🔴",
+    "emoji": "🍃",
     "lat": 43.1181438,
     "lng": -79.2493887,
     "desc": "Tiered branches; deep sinuses; red fall color.",
-    "hint": "Cherry blossoms and a Japanese corner ahead."
-  },
-  {
-    "id": "cherry-japanese",
-    "name": "Cherry Blossoms and Japanese ...",
-    "short": "Japanese corner",
-    "type": "poi",
-    "emoji": "🧘",
-    "lat": 43.1176426,
-    "lng": -79.249335,
-    "desc": "A quiet corner with ornamental cherries.",
     "hint": "Look for weeping willows near water."
   },
   {
@@ -162,17 +151,6 @@
     "lat": 43.1171028,
     "lng": -79.2496871,
     "desc": "Graceful drooping branches near wet areas.",
-    "hint": "A tough weed with a purple flower next."
-  },
-  {
-    "id": "milk-thistle",
-    "name": "Milk Thistle",
-    "short": "Thistle",
-    "type": "plant",
-    "emoji": "🟣",
-    "lat": 43.116452,
-    "lng": -79.249994,
-    "desc": "Spiny leaves with white marbling.",
     "hint": "Find white maples and hawthorn nearby."
   },
   {
@@ -184,17 +162,6 @@
     "lat": 43.1160017,
     "lng": -79.2496668,
     "desc": "Mixed trees forming a small edge.",
-    "hint": "Back to more Osage orange along the edge."
-  },
-  {
-    "id": "more-osage",
-    "name": "More Osage Orange",
-    "short": "More Osage",
-    "type": "tree",
-    "emoji": "🟠",
-    "lat": 43.1157808,
-    "lng": -79.2485242,
-    "desc": "Another stretch of Osage hedge.",
     "hint": "Finish at Theal House."
   },
   {
@@ -209,4 +176,3 @@
     "hint": "Tour complete — great job!"
   }
 ]
-add stops.json data file
