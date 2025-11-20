@@ -55,14 +55,25 @@
     "hint": "A white pine by a small labyrinth is next."
   },
   {
-    "id": "white-pine-labyrinth",
-    "name": "White Pine and Labrynth",
-    "short": "Pine & Labyrinth",
+    "id": "white-pine",
+    "name": "Pinus strobus",
+    "short": "White Pine",
+    "type": "tree",
+    "emoji": "🎄",
+    "lat": 43.1175459,
+    "lng": -79.2471489,
+    "desc": "Tall needles; eastern white pine.",
+    "hint": "A quiet walking spiral is nearby."
+  },
+  {
+    "id": "labyrinth",
+    "name": "Labyrinth",
+    "short": "Labyrinth",
     "type": "poi",
     "emoji": "🌀",
     "lat": 43.1180244,
     "lng": -79.2473441,
-    "desc": "Tall needles; quiet walking spiral.",
+    "desc": "Quiet walking spiral.",
     "hint": "Two thousand rings? Look for the time edge."
   },
   {
